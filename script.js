@@ -1,42 +1,57 @@
 const row = document.querySelector('.row');
 const continent = document.querySelector('#continent');
-const euro = document.querySelector('.euro')
-const dollar = document.querySelector('.dollar')
+// const euro = document.querySelector('.euro')
+// const dollar = document.querySelector('.dollar')
 const converter =document.querySelector('.converter')
 const buttonConvert = document.querySelector('.button')
+const selectBase = document.querySelector('.select-base')
+const subTitle = document.querySelector('.title')
+const subTitle2 = document.querySelector('.title2')
+
+console.log(continent.value)
 
 buttonConvert.addEventListener('click', () => {
-    let app = converter.value
-    fetch(`https://api.exchangerate.host/latest?base=kgs&symbols=USD,EUR,&amount=${app}`)
+    let amount = converter.value || 0
+    let app = selectBase.value
+    fetch(`https://api.exchangerate.host/latest?base=${app}&symbols=USD,EUR,KGS,&amount=${amount}`)
         .then(response => response.json())
         .then(data => {
             console.log(data.rates)
-
-            dollar.innerHTML = Object.values(data.rates)[0].toFixed(2)
-            euro.innerHTML = Object.values(data.rates)[1].toFixed(2)
+            subTitle.innerHTML = `Base currency: ${data.base}`
+            if (data.base === 'USD'){
+                subTitle2.innerHTML = `<span>EUR: ${data.rates.EUR.toFixed(2)}</span>
+                                       <span>KGS: ${data.rates.KGS.toFixed(2)}</span>`
+            } else if (data.base === 'EUR'){
+                subTitle2.innerHTML = `<span>USD: ${data.rates.USD.toFixed(2)}</span>
+                                       <span>KGS: ${data.rates.KGS.toFixed(2)}</span>`
+            } else if (data.base === 'KGS'){
+                subTitle2.innerHTML = `<span>EUR: ${data.rates.EUR.toFixed(2)}</span>
+                                       <span>USD: ${data.rates.USD.toFixed(2)}</span>`
+            }
+            // dollar.innerHTML = Object.values(data.rates)[0].toFixed(2)
+            // euro.innerHTML = Object.values(data.rates)[1].toFixed(2)
         })
-
-
 
 })
 continent.addEventListener('change', ()=> {
     let region = continent.value
-    if (continent.value === 'europe'){
-        region = 'europe'
-    } else if (continent.value === 'asia'){
-        region = 'asia'
-    } else if (continent.value === 'africa'){
-        region = 'africa'
-    } else if (continent.value === 'americas'){
-        region = 'americas'
-    } else if (continent.value === 'oceania'){
-        region = 'oceania'
-    }
+    // if (continent.value === 'europe'){
+    //     region = 'europe'
+    // } else if (continent.value === 'asia'){
+    //     region = 'asia'
+    // } else if (continent.value === 'africa'){
+    //     region = 'africa'
+    // } else if (continent.value === 'americas'){
+    //     region = 'americas'
+    // } else if (continent.value === 'oceania'){
+    //     region = 'oceania'
+    // }
     console.log(region)
 
 fetch (`https://restcountries.com/v3.1/region/${region}`)
     .then(response => response.json())
     .then(data => {
+        row.innerHTML = ''
         data.map(country => {
             console.log(country)
             row.innerHTML += `<div class="col-4">
